@@ -13,7 +13,7 @@ A Frappe/ERPNext application that integrates ZKTeco biometric attendance devices
 ✅ **Error Tracking** - Full audit trail of processing status and errors
 ✅ **Manual Fetch Control** - On-demand fetch with custom date ranges
 ✅ **Duplicate Prevention** - Automatic detection prevents duplicate Employee Checkins
-✅ **Safe Data Handling** - Device logs are never deleted; safe to retry
+✅ **Safe Data Handling** - Device logs are never deleted; safe to retry.
 
 ---
 
