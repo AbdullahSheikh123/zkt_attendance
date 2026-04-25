@@ -1,0 +1,81 @@
+{
+ "category": "Modules",
+ "charts": [],
+ "content": "[{\"id\":\"section1\",\"type\":\"section\",\"data\":{\"col\":3,\"title\":\"Machines & Logs\"},\"blocks\":[{\"id\":\"block1\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"ZKT Machine\",\"col\":3}},{\"id\":\"block2\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"ZKT Attendance Log\",\"col\":3}},{\"id\":\"block3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Employee Checkin\",\"col\":3}}]}]",
+ "creation": "2024-01-01 00:00:00.000000",
+ "developer_mode_only": 0,
+ "disable_user_customization": 0,
+ "doctype": "Workspace",
+ "extends": "",
+ "extends_another_page": 0,
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "device-mobile",
+ "is_default": 0,
+ "is_hidden": 0,
+ "label": "ZKT Attendance",
+ "links": [
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "ZKT Machine",
+   "link_count": 0,
+   "link_to": "ZKT Machine",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "ZKT Attendance Log",
+   "link_count": 0,
+   "link_to": "ZKT Attendance Log",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Employee Checkin",
+   "link_count": 0,
+   "link_to": "Employee Checkin",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2024-01-01 00:00:00.000000",
+ "module": "ZKT Attendance",
+ "name": "ZKT Attendance",
+ "owner": "Administrator",
+ "pin_to_bottom": 0,
+ "pin_to_top": 0,
+ "public": 1,
+ "restrict_to_domain": "",
+ "roles": [],
+ "sequence_id": 100,
+ "shortcuts": [
+  {
+   "color": "Blue",
+   "format": "{} Active",
+   "label": "ZKT Machines",
+   "link_to": "ZKT Machine",
+   "stats_filter": "{ \"is_active\": 1 }",
+   "type": "DocType"
+  },
+  {
+   "color": "Yellow",
+   "format": "{} Pending",
+   "label": "Pending Logs",
+   "link_to": "ZKT Attendance Log",
+   "stats_filter": "{ \"status\": \"Pending\" }",
+   "type": "DocType"
+  }
+ ],
+ "title": "ZKT Attendance"
+}

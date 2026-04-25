@@ -1,0 +1,188 @@
+{
+ "actions": [],
+ "autoname": "field:machine_name",
+ "creation": "2024-01-01 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "machine_name",
+  "column_break_1",
+  "is_active",
+  "section_break_connection",
+  "ip_address",
+  "column_break_2",
+  "port",
+  "communication_password",
+  "column_break_3",
+  "timeout",
+  "section_break_sync",
+  "sync_interval",
+  "fetch_last_days",
+  "section_break_status",
+  "last_fetch_time",
+  "column_break_4",
+  "last_fetch_status",
+  "total_records_fetched",
+  "section_break_notes",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "machine_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Machine Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Active"
+  },
+  {
+   "fieldname": "section_break_connection",
+   "fieldtype": "Section Break",
+   "label": "Connection Settings"
+  },
+  {
+   "fieldname": "ip_address",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "IP Address",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "4370",
+   "fieldname": "port",
+   "fieldtype": "Int",
+   "label": "Port",
+   "reqd": 1
+  },
+  {
+   "fieldname": "communication_password",
+   "fieldtype": "Password",
+   "label": "Communication Password"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "10",
+   "fieldname": "timeout",
+   "fieldtype": "Int",
+   "label": "Timeout (seconds)"
+  },
+  {
+   "fieldname": "section_break_sync",
+   "fieldtype": "Section Break",
+   "label": "Auto-Sync Settings"
+  },
+  {
+   "default": "30",
+   "fieldname": "sync_interval",
+   "fieldtype": "Int",
+   "label": "Sync Interval (minutes)",
+   "description": "Interval in minutes for automatic log fetch. Minimum 5 minutes.",
+   "reqd": 1
+  },
+  {
+   "default": "7",
+   "fieldname": "fetch_last_days",
+   "fieldtype": "Int",
+   "label": "Fetch Last N Days",
+   "description": "Auto-sync will only fetch logs from the last N days to improve efficiency. Set to 0 to fetch all logs.",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_status",
+   "fieldtype": "Section Break",
+   "label": "Fetch Status"
+  },
+  {
+   "fieldname": "last_fetch_time",
+   "fieldtype": "Datetime",
+   "label": "Last Fetch Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "last_fetch_status",
+   "fieldtype": "Select",
+   "label": "Last Fetch Status",
+   "options": "\nSuccess\nFailed\nPartial",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_records_fetched",
+   "fieldtype": "Int",
+   "label": "Total Records Fetched",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_notes",
+   "fieldtype": "Section Break",
+   "label": "Notes"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  }
+ ],
+ "links": [],
+ "modified": "2026-04-25 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "ZKT Attendance",
+ "name": "ZKT Machine",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "HR User"
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

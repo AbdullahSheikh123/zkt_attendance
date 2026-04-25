@@ -1,0 +1,166 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2024-01-01 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "machine",
+  "column_break_1",
+  "employee",
+  "employee_name",
+  "section_break_2",
+  "timestamp",
+  "column_break_3",
+  "punch_type",
+  "device_user_id",
+  "column_break_4",
+  "status",
+  "error_message",
+  "section_break_raw",
+  "raw_uid",
+  "column_break_raw2",
+  "raw_punch",
+  "raw_status"
+ ],
+ "fields": [
+  {
+   "fieldname": "machine",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Machine",
+   "options": "ZKT Machine",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Employee",
+   "options": "Employee"
+  },
+  {
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Employee Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_2",
+   "fieldtype": "Section Break",
+   "label": "Attendance Details"
+  },
+  {
+   "fieldname": "timestamp",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Timestamp",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "punch_type",
+   "fieldtype": "Select",
+   "label": "Punch Type",
+   "options": "\nCheck In\nCheck Out\nOvertime In\nOvertime Out"
+  },
+  {
+   "fieldname": "device_user_id",
+   "fieldtype": "Data",
+   "label": "Device User ID",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Processing Status",
+   "options": "Pending\nProcessed\nSkipped\nError",
+   "default": "Pending"
+  },
+  {
+   "fieldname": "error_message",
+   "fieldtype": "Small Text",
+   "label": "Error Message",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_raw",
+   "fieldtype": "Section Break",
+   "label": "Raw Device Data",
+   "collapsible": 1
+  },
+  {
+   "fieldname": "raw_uid",
+   "fieldtype": "Int",
+   "label": "Raw UID"
+  },
+  {
+   "fieldname": "column_break_raw2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "raw_punch",
+   "fieldtype": "Int",
+   "label": "Raw Punch Code"
+  },
+  {
+   "fieldname": "raw_status",
+   "fieldtype": "Int",
+   "label": "Raw Status Code"
+  }
+ ],
+ "links": [],
+ "modified": "2024-01-01 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "ZKT Attendance",
+ "name": "ZKT Attendance Log",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "export": 1,
+   "read": 1,
+   "role": "HR User"
+  }
+ ],
+ "sort_field": "timestamp",
+ "sort_order": "DESC",
+ "track_changes": 0
+}
