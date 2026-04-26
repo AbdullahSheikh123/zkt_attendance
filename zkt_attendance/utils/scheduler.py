@@ -3,6 +3,7 @@ Scheduled tasks for ZKT Attendance auto-fetch
 """
 import frappe
 from datetime import datetime, timedelta
+from frappe.utils import get_datetime
 
 
 def auto_fetch_attendance():
@@ -29,7 +30,7 @@ def auto_fetch_attendance():
             
             # Check if enough time has passed since last fetch
             if last_fetch:
-                last_fetch_time = frappe.get_datetime(last_fetch)
+                last_fetch_time = get_datetime(last_fetch)
                 time_since_fetch = (current_time - last_fetch_time).total_seconds() / 60  # Convert to minutes
                 
                 if time_since_fetch < sync_interval:

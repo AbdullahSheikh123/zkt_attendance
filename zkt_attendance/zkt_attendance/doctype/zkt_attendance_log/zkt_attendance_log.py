@@ -25,10 +25,6 @@ class ZKTAttendanceLog(Document):
             )
             if employee:
                 self.employee = employee
-                frappe.log_error(
-                    f"Matched device_user_id {self.device_user_id} to employee {employee}",
-                    "ZKT Employee Match - Success"
-                )
             else:
                 # Fallback: try matching employee_id directly
                 employee = frappe.db.get_value(
@@ -38,11 +34,8 @@ class ZKTAttendanceLog(Document):
                 )
                 if employee:
                     self.employee = employee
-                    frappe.log_error(
-                        f"Matched device_user_id {self.device_user_id} to employee {employee} (via employee_id)",
-                        "ZKT Employee Match - Success (Fallback)"
-                    )
                 else:
+                    # Only log if no match found
                     frappe.log_error(
                         f"No employee found for device_user_id: {self.device_user_id}. Searched in attendance_device_id and employee_id.",
                         "ZKT Employee Match - Failed"
