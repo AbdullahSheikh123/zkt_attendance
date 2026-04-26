@@ -78,8 +78,7 @@ function show_fetch_dialog(frm) {
 				args: {
 					machine_name: frm.doc.name,
 					from_date: values.from_date || "",
-					to_date: values.to_date || "",
-					clear_device: 0
+					to_date: values.to_date || ""
 				},
 				freeze: false,
 				async: true,

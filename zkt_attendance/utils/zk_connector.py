@@ -81,14 +81,14 @@ class ZKConnector:
                     pass
             return {"success": False, "message": str(e)}
 
-    def fetch_and_save_logs(self, from_date=None, to_date=None, clear_device=False):
+    def fetch_and_save_logs(self, from_date=None, to_date=None):
         """
         Fetch attendance logs from device and save to ZKT Attendance Log.
+        Device logs are never deleted - this is safer and allows retrying failed imports.
         
         Args:
             from_date: Filter logs from this date (optional)
             to_date: Filter logs to this date (optional)
-            clear_device: DEPRECATED - No longer supported. Logs are never deleted from device.
             
         Returns:
             dict with results summary
@@ -175,16 +175,15 @@ class ZKConnector:
                     log.insert(ignore_permissions=True)
 
                     # Immediately try to create checkin
-                    success = log.create_checkin()
-                    if success:
+                    log.create_checkin()
+                    
+                    # Check the result status
+                    if log.status == "Processed":
                         new_count += 1
-                    else:
-                        # Log creation failed, increment errors or track as issue
+                    elif log.status == "Skipped":
+                        skip_count += 1
+                    elif log.status == "Error":
                         error_count += 1
-                        frappe.log_error(
-                            message=f"Failed to create checkin for {uid} at {timestamp}: {log.error_message}",
-                            title=f"Checkin Creation Failed - {self.machine_name}"
-                        )
 
                 except Exception as e:
                     error_count += 1

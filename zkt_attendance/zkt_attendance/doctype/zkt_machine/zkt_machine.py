@@ -29,10 +29,9 @@ class ZKTMachine(Document):
         result = connector.test_connection()
         return result
 
-    def fetch_attendance(self, from_date=None, to_date=None, clear_device=False):
-        """Fetch attendance logs from device. Note: clear_device is deprecated and ignored."""
+    def fetch_attendance(self, from_date=None, to_date=None):
+        """Fetch attendance logs from device."""
         from zkt_attendance.utils.zk_connector import ZKConnector
         connector = ZKConnector(self)
-        # Always pass clear_device=False to prevent accidental deletion
-        result = connector.fetch_and_save_logs(from_date=from_date, to_date=to_date, clear_device=False)
+        result = connector.fetch_and_save_logs(from_date=from_date, to_date=to_date)
         return result

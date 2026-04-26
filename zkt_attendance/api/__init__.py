@@ -15,7 +15,7 @@ def test_machine_connection(machine_name):
 
 
 @frappe.whitelist()
-def fetch_attendance_logs(machine_name, from_date=None, to_date=None, clear_device=False):
+def fetch_attendance_logs(machine_name, from_date=None, to_date=None):
     """
     Fetch attendance logs from a ZKT Machine as a background job.
     
@@ -23,7 +23,6 @@ def fetch_attendance_logs(machine_name, from_date=None, to_date=None, clear_devi
         machine_name: Name of the ZKT Machine document
         from_date: Start date filter (optional)
         to_date: End date filter (optional)  
-        clear_device: Whether to clear device logs after fetching (deprecated, always False)
     """
     # Queue the fetch as a background job
     frappe.enqueue(
@@ -54,8 +53,7 @@ def _fetch_attendance_logs_background(machine_name, from_date=None, to_date=None
         machine = frappe.get_doc("ZKT Machine", machine_name)
         result = machine.fetch_attendance(
             from_date=from_date,
-            to_date=to_date,
-            clear_device=False
+            to_date=to_date
         )
         
         # Log the result
