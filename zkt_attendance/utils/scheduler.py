@@ -37,9 +37,15 @@ def auto_fetch_attendance():
                     # Skip this machine, not enough time has passed
                     continue
             
-            # Calculate from_date based on fetch_last_days
-            from_date = None
-            if fetch_last_days > 0:
+            # Prefer continuing from the newest imported log for this machine.
+            # Fall back to fetch_last_days only for the first sync/backfill.
+            from_date = frappe.db.get_value(
+                "ZKT Attendance Log",
+                {"machine": machine.name},
+                "timestamp",
+                order_by="timestamp desc"
+            )
+            if not from_date and fetch_last_days > 0:
                 from_date = (current_time - timedelta(days=fetch_last_days)).strftime('%Y-%m-%d')
             
             # Fetch attendance for this machine

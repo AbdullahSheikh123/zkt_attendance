@@ -24,12 +24,19 @@ class ZKConnector:
             machine_doc: ZKT Machine document or dict with connection details
         """
         self.machine = machine_doc
-        self.machine_name = getattr(machine_doc, "machine_name", machine_doc.get("machine_name"))
+        self.machine_name = getattr(machine_doc, "name", None) or machine_doc.get("name")
+        self.machine_label = getattr(machine_doc, "machine_name", None) or machine_doc.get("machine_name")
         self.ip = getattr(machine_doc, "ip_address", machine_doc.get("ip_address"))
         self.port = int(getattr(machine_doc, "port", machine_doc.get("port", 4370)))
-        self.password = getattr(machine_doc, "communication_password", machine_doc.get("communication_password")) or 0
+        self.password = self._get_password(machine_doc)
         self.timeout = int(getattr(machine_doc, "timeout", machine_doc.get("timeout", 10)))
         self.zk = None
+
+    def _get_password(self, machine_doc):
+        """Return the decrypted communication password when available."""
+        if hasattr(machine_doc, "get_password"):
+            return machine_doc.get_password("communication_password") or 0
+        return getattr(machine_doc, "communication_password", machine_doc.get("communication_password")) or 0
 
     def _get_zk_instance(self):
         """Create ZK library instance"""
@@ -99,6 +106,8 @@ class ZKConnector:
             "total": 0,
             "new_records": 0,
             "skipped": 0,
+            "skipped_existing": 0,
+            "skipped_inactive": 0,
             "errors": 0,
             "message": ""
         }
@@ -123,17 +132,46 @@ class ZKConnector:
                 self._update_machine_status("Success", 0)
                 return result
 
-            # Filter by date range if provided
+            active_employee_map = self._get_active_employee_map()
+            latest_saved_timestamp = self._get_latest_saved_timestamp()
+            from_datetime = get_datetime(from_date) if from_date else None
+            to_datetime = get_datetime(to_date) if to_date else None
+
+            if latest_saved_timestamp and not from_date:
+                latest_saved_timestamp = get_datetime(latest_saved_timestamp)
+                from_datetime = latest_saved_timestamp
+
+            # Filter by date range, active employees, and already-imported rows.
             filtered_records = []
+            inactive_count = 0
+            existing_count = 0
             for record in attendance_records:
+                uid = str(record.user_id)
                 rec_time = record.timestamp
-                if from_date and rec_time.date() < get_datetime(from_date).date():
+
+                if from_datetime and rec_time <= from_datetime:
+                    existing_count += 1
                     continue
-                if to_date and rec_time.date() > get_datetime(to_date).date():
+                if to_datetime and rec_time.date() > to_datetime.date():
                     continue
+                if uid not in active_employee_map:
+                    inactive_count += 1
+                    continue
+
+                existing = frappe.db.exists("ZKT Attendance Log", {
+                    "machine": self.machine_name,
+                    "device_user_id": uid,
+                    "timestamp": rec_time
+                })
+                if existing:
+                    existing_count += 1
+                    continue
+
                 filtered_records.append(record)
 
             result["total"] = len(filtered_records)
+            result["skipped_existing"] = existing_count
+            result["skipped_inactive"] = inactive_count
 
             # Save records to database
             new_count = 0
@@ -149,21 +187,11 @@ class ZKConnector:
 
                     punch_type = PUNCH_TYPE_MAP.get(punch_code, "Check In")
 
-                    # Check for duplicate
-                    existing = frappe.db.exists("ZKT Attendance Log", {
-                        "machine": self.machine_name,
-                        "device_user_id": uid,
-                        "timestamp": timestamp
-                    })
-
-                    if existing:
-                        skip_count += 1
-                        continue
-
                     # Create new log record
                     log = frappe.get_doc({
                         "doctype": "ZKT Attendance Log",
                         "machine": self.machine_name,
+                        "employee": active_employee_map[uid],
                         "device_user_id": uid,
                         "timestamp": timestamp,
                         "punch_type": punch_type,
@@ -204,7 +232,8 @@ class ZKConnector:
             result["skipped"] = skip_count
             result["errors"] = error_count
             result["message"] = (
-                f"Fetch complete. New: {new_count}, Skipped (duplicate): {skip_count}, Errors: {error_count}"
+                f"Fetch complete. New: {new_count}, Existing skipped: {existing_count}, "
+                f"Inactive/unmapped skipped: {inactive_count}, Other skipped: {skip_count}, Errors: {error_count}"
             )
 
             status = "Success" if error_count == 0 else "Partial"
@@ -236,6 +265,38 @@ class ZKConnector:
             frappe.db.commit()
         except Exception:
             pass
+
+    def _get_latest_saved_timestamp(self):
+        """Return newest stored ZKT log timestamp for this machine."""
+        return frappe.db.get_value(
+            "ZKT Attendance Log",
+            {"machine": self.machine_name},
+            "timestamp",
+            order_by="timestamp desc"
+        )
+
+    def _get_active_employee_map(self):
+        """Map active Employee device IDs to Employee names."""
+        employee_meta = frappe.get_meta("Employee")
+        fields = ["name", "employee_id"]
+        has_attendance_device_id = employee_meta.has_field("attendance_device_id")
+        if has_attendance_device_id:
+            fields.append("attendance_device_id")
+
+        employees = frappe.get_all(
+            "Employee",
+            filters={"status": "Active"},
+            fields=fields
+        )
+
+        employee_map = {}
+        for employee in employees:
+            if has_attendance_device_id and employee.attendance_device_id:
+                employee_map[str(employee.attendance_device_id)] = employee.name
+            if employee.employee_id:
+                employee_map.setdefault(str(employee.employee_id), employee.name)
+
+        return employee_map
 
     def get_device_users(self):
         """Get all users enrolled on the device"""
