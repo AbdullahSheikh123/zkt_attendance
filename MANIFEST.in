@@ -1,0 +1,5 @@
+include requirements.txt
+recursive-include zkt_attendance *.json
+recursive-include zkt_attendance *.js
+recursive-include zkt_attendance *.css
+recursive-include zkt_attendance *.txt
