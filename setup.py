@@ -8,11 +8,20 @@ APP_NAME = "zkt_attendance"
 
 def ensure_bench_app_registered():
     """Make bench get-app builds work when build runs before apps.txt sync."""
-    app_root = Path(__file__).resolve().parent
-    bench_root = app_root.parent.parent
-    apps_txt = bench_root / "sites" / "apps.txt"
+    candidates = []
+    for start in (Path(__file__).resolve().parent, Path.cwd().resolve()):
+        candidates.extend(start.parents)
+        candidates.append(start)
 
-    if not apps_txt.exists():
+    apps_txt = None
+    for candidate in candidates:
+        possible_apps_txt = candidate / "sites" / "apps.txt"
+        possible_apps_dir = candidate / "apps"
+        if possible_apps_txt.exists() and possible_apps_dir.exists():
+            apps_txt = possible_apps_txt
+            break
+
+    if not apps_txt:
         return
 
     apps_text = apps_txt.read_text(encoding="utf-8")

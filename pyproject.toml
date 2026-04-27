@@ -1,0 +1,14 @@
+[project]
+name = "zkt_attendance"
+version = "1.0.0"
+description = "ZKTeco Attendance Device Integration for Frappe/ERPNext"
+authors = [
+    { name = "Your Company", email = "admin@yourcompany.com" }
+]
+dependencies = [
+    "pyzk"
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
