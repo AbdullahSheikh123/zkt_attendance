@@ -6,7 +6,7 @@ using the pyzk library.
 
 import frappe
 from frappe import _
-from frappe.utils import now_datetime, get_datetime
+from frappe.utils import add_days, now_datetime, get_datetime
 
 
 PUNCH_TYPE_MAP = {
@@ -30,6 +30,9 @@ class ZKConnector:
         self.port = int(getattr(machine_doc, "port", machine_doc.get("port", 4370)))
         self.password = self._get_password(machine_doc)
         self.timeout = int(getattr(machine_doc, "timeout", machine_doc.get("timeout", 10)))
+        self.zkt_log_retention_days = int(
+            getattr(machine_doc, "zkt_log_retention_days", machine_doc.get("zkt_log_retention_days", 0)) or 0
+        )
         self.zk = None
 
     def _get_password(self, machine_doc):
@@ -108,6 +111,7 @@ class ZKConnector:
             "skipped": 0,
             "skipped_existing": 0,
             "skipped_inactive": 0,
+            "deleted_old_logs": 0,
             "errors": 0,
             "message": ""
         }
@@ -127,6 +131,7 @@ class ZKConnector:
 
             if not attendance_records:
                 conn.disconnect()
+                result["deleted_old_logs"] = self.cleanup_old_zkt_logs()
                 result["success"] = True
                 result["message"] = "No attendance records found on device"
                 self._update_machine_status("Success", 0)
@@ -221,6 +226,7 @@ class ZKConnector:
                     )
 
             frappe.db.commit()
+            deleted_old_logs = self.cleanup_old_zkt_logs()
 
             # Note: clear_device functionality has been removed for data safety
             # Device logs are preserved and can be manually cleared if needed
@@ -230,10 +236,12 @@ class ZKConnector:
             result["success"] = True
             result["new_records"] = new_count
             result["skipped"] = skip_count
+            result["deleted_old_logs"] = deleted_old_logs
             result["errors"] = error_count
             result["message"] = (
                 f"Fetch complete. New: {new_count}, Existing skipped: {existing_count}, "
-                f"Inactive/unmapped skipped: {inactive_count}, Other skipped: {skip_count}, Errors: {error_count}"
+                f"Inactive/unmapped skipped: {inactive_count}, Other skipped: {skip_count}, "
+                f"Old ZKT logs deleted: {deleted_old_logs}, Errors: {error_count}"
             )
 
             status = "Success" if error_count == 0 else "Partial"
@@ -295,6 +303,34 @@ class ZKConnector:
                 employee_map[str(employee.attendance_device_id)] = employee.name
 
         return employee_map
+
+    def cleanup_old_zkt_logs(self):
+        """Delete old app-side ZKT logs only; Employee Checkins and device logs stay intact."""
+        if self.zkt_log_retention_days <= 0:
+            return 0
+
+        cutoff = add_days(now_datetime(), -self.zkt_log_retention_days)
+        old_log_names = frappe.get_all(
+            "ZKT Attendance Log",
+            filters={
+                "machine": self.machine_name,
+                "timestamp": ["<", cutoff],
+            },
+            pluck="name",
+        )
+
+        for log_name in old_log_names:
+            frappe.delete_doc(
+                "ZKT Attendance Log",
+                log_name,
+                ignore_permissions=True,
+                force=True,
+            )
+
+        if old_log_names:
+            frappe.db.commit()
+
+        return len(old_log_names)
 
     def get_device_users(self):
         """Get all users enrolled on the device"""

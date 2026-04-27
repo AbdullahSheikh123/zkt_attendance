@@ -7,6 +7,7 @@ class ZKTMachine(Document):
     def validate(self):
         self.validate_ip_address()
         self.validate_port()
+        self.validate_log_retention()
 
     def validate_ip_address(self):
         import re
@@ -21,6 +22,16 @@ class ZKTMachine(Document):
     def validate_port(self):
         if not (1 <= self.port <= 65535):
             frappe.throw("Port must be between 1 and 65535")
+
+    def validate_log_retention(self):
+        if self.zkt_log_retention_days and self.zkt_log_retention_days < 0:
+            frappe.throw("Keep ZKT Logs For Days must be 0 or greater")
+        if (
+            self.zkt_log_retention_days
+            and self.fetch_last_days
+            and self.zkt_log_retention_days <= self.fetch_last_days
+        ):
+            frappe.throw("Keep ZKT Logs For Days must be greater than Fetch Last N Days")
 
     def test_connection(self):
         """Test connection to the ZKT device"""
