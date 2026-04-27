@@ -31,7 +31,7 @@ with open("requirements.txt") as f:
 ensure_bench_app_registered()
 
 setup(
-    name=APP_NAME,
+    name="zkt_attendance",
     version="1.0.0",
     description="ZKTeco Attendance Device Integration for Frappe/ERPNext",
     author="Your Company",
