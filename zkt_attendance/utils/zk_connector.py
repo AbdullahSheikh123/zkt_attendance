@@ -278,7 +278,7 @@ class ZKConnector:
     def _get_active_employee_map(self):
         """Map active Employee device IDs to Employee names."""
         employee_meta = frappe.get_meta("Employee")
-        fields = ["name", "employee_id"]
+        fields = ["name"]
         has_attendance_device_id = employee_meta.has_field("attendance_device_id")
         if has_attendance_device_id:
             fields.append("attendance_device_id")
@@ -293,8 +293,6 @@ class ZKConnector:
         for employee in employees:
             if has_attendance_device_id and employee.attendance_device_id:
                 employee_map[str(employee.attendance_device_id)] = employee.name
-            if employee.employee_id:
-                employee_map.setdefault(str(employee.employee_id), employee.name)
 
         return employee_map
 

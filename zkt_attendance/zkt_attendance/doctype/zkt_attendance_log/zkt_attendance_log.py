@@ -17,7 +17,6 @@ class ZKTAttendanceLog(Document):
     def resolve_employee(self):
         """Try to match device_user_id to an Employee"""
         if self.device_user_id and not self.employee:
-            # Check Employee doctype for attendance_device_id field (ERPNext standard)
             employee = frappe.db.get_value(
                 "Employee",
                 {"attendance_device_id": self.device_user_id, "status": "Active"},
@@ -26,20 +25,10 @@ class ZKTAttendanceLog(Document):
             if employee:
                 self.employee = employee
             else:
-                # Fallback: try matching employee_id directly
-                employee = frappe.db.get_value(
-                    "Employee",
-                    {"employee_id": self.device_user_id, "status": "Active"},
-                    "name"
+                frappe.log_error(
+                    f"No active employee found with attendance_device_id: {self.device_user_id}.",
+                    "ZKT Employee Match - Failed"
                 )
-                if employee:
-                    self.employee = employee
-                else:
-                    # Only log if no match found
-                    frappe.log_error(
-                        f"No employee found for device_user_id: {self.device_user_id}. Searched in attendance_device_id and employee_id.",
-                        "ZKT Employee Match - Failed"
-                    )
 
     def create_checkin(self):
         """Create Employee Checkin record from this log"""
