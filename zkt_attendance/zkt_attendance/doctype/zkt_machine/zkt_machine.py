@@ -11,9 +11,9 @@ class ZKTMachine(Document):
 
     def validate_ip_address(self):
         import re
-        # ip_pattern = r"^(\d{1,3}\.){3}\d{1,3}$"
-        # if not re.match(ip_pattern, self.ip_address):
-            # frappe.throw(f"Invalid IP Address: {self.ip_address}")
+        ip_pattern = r"^(\d{1,3}\.){3}\d{1,3}$"
+        if not re.match(ip_pattern, self.ip_address):
+            frappe.throw(f"Invalid IP Address: {self.ip_address}")
         parts = self.ip_address.split(".")
         for part in parts:
             if int(part) > 255:
